@@ -24,8 +24,8 @@ var deferred = q.defer();
   
   runner.exec("php  convertor.php " + jsonFile,
       function (err, stdout, stderr) {
-        console.log(err);
-        console.log(stderr);
+        //console.log(err);
+        //console.log(stderr);
         //console.log(stdout);
       if(!err){
         try {

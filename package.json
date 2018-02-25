@@ -2,7 +2,7 @@
   "name": "phpexceljs",
   "version": "1.0.0",
   "description": "Node version for PHPExcel, reuse PHPExcel and interact with nodejs",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
