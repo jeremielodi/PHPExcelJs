@@ -6,10 +6,13 @@ In this repository I'm using PHPExcel library for recreating xlsx files with nod
 As this precess requires interation between PHP and nodejs, php must be installed in your server <br/>
 ```sudo apt-get install php5-cli```
 <br>
-I facilitate this communication by creating a radom json file (in nodejs) that I save in temp folder next I execute a child process ```"php  convertor.php " + jsonFile```
-<br> ```jsonFile``` help php to know where get informations
+I facilitate this communication by creating a radom json file (in nodejs) that I save in temp folder, next I execute a child process 
+```"php  convertor.php " + jsonFile``` for calling php.
+<br> ```jsonFile``` help php to know where to get informations
 <br> Once php get the file content, the file is diretly deleted
-<br/>
+<br/><br/>
+Usage
+
 ```js
 const phpExcel = require('./index');
 
