@@ -150,12 +150,12 @@ app.get('/excel', (req, res, next) => {
 
   phpExcel.render(WorkBook).then(ExcelBuffer => {
 
-    res.writeHead(200, {
+    res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': 'attachment; filename=file.xlsx',
       'Content-Length': ExcelBuffer.length
     });
-    res.end(ExcelBuffer);
+    res.send(ExcelBuffer);
   }).catch(err => {
     console.log(err);
   }).done();

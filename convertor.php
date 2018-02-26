@@ -10,6 +10,7 @@ define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
 /** Include PHPExcel */
 require_once dirname(__FILE__) . '/PHPExcel/Classes/PHPExcel.php';
 
+// $objPHPExcel->setActiveSheetIndex(0)->mergeCells('A1:C1');
 
 $objPHPExcel = new PHPExcel();
 

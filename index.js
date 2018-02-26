@@ -1,12 +1,12 @@
 fs = require('fs');
 var runner = require("child_process");
-const q = require('q');
+  const q = require('q');
 
 module.exports.render = render;
 
 
 function render(WorkBook){
-//sudo apt-get install php5-cli
+
 const temp1 =  __dirname + '/temp/'+Math.random();
 const temp =  __dirname + '/temp/';
 const filePath = temp+ WorkBook.name;
@@ -21,6 +21,8 @@ var deferred = q.defer();
   if (err) {
     deferred.reject(new Error(err));
   }
+  
+  //sudo apt-get install php5-cli
   
   runner.exec("php  convertor.php " + jsonFile,
       function (err, stdout, stderr) {
