@@ -10,7 +10,7 @@ define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
 /** Include PHPExcel */
 require_once dirname(__FILE__) . '/PHPExcel/Classes/PHPExcel.php';
 
-// $objPHPExcel->setActiveSheetIndex(0)->mergeCells('A1:C1');
+// 
 
 $objPHPExcel = new PHPExcel();
 
@@ -32,10 +32,12 @@ $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
 $file = $argv[1]; //json file 
 							
 $json =  json_decode(file_get_contents($file));
+					
+
+$filePath  =  $json->path ?? 'file.xlsx';
 							
-$filePath  = exist(@$json->path, 'file.xlsx');
-							
-$sheets  = exist(@$json->sheets, []);
+$sheets  = $json->sheets?? [];
+
 unlink($file);
 
 
@@ -43,9 +45,12 @@ $sheetCounter = 0;
 foreach($sheets as $sheet){
 
 	
-$datas  = exist(@$sheet->rows, []);
-$colWidth = exist(@$sheet->columns, []);
-$drawings = exist(@$sheet->drawings, []);
+$datas  = $sheet->cells ?? [];
+$colWidth = $sheet->columns?? [];
+$drawings = $sheet->drawings?? [];
+$merges = $sheet->merges ?? [];
+
+
 
 //if not default sheet create a new one
 if($sheetCounter !=0 ){
@@ -53,36 +58,39 @@ if($sheetCounter !=0 ){
 }
 $activeSheet = $objPHPExcel->setActiveSheetIndex($sheetCounter);
 
-foreach($colWidth as $col){
+foreach($colWidth as $key=>$col){
 	if(isset($col->width)){
-		$activeSheet->getColumnDimension($col->key)->setWidth($col->width);
+		$activeSheet->getColumnDimension($key)->setWidth($col->width);
 	}
 }
 
-foreach($datas as $row){
-    foreach($row as $data){
-		$activeSheet ->setCellValue($data->key, $data->value);
-		if(isset($data->style)){
+foreach($merges as $key){
+	$activeSheet->mergeCells($key);
+}
+foreach($datas as $key=>$data){
+    
+		$activeSheet ->setCellValue($key, $data->val);
+		if(isset($data->styles)){
 			
 			//cell's type
-			if(isset($data->style->format)){
-				$activeSheet->getStyle($data->key) ->getNumberFormat()->setFormatCode($data->style->format);
+			if(isset($data->styles->format)){
+				$activeSheet->getStyle($key)->getNumberFormat()->setFormatCode($data->styles->format);
 			}
 
 			//cell's font size
-			if(isset($data->style->fontSize)){
-				$activeSheet->getStyle($data->key) ->getFont()->setSize($data->style->fontSize);
+			if(isset($data->styles->fontSize)){
+				$activeSheet->getStyle($key) ->getFont()->setSize($data->styles->fontSize);
 			}
 			//cell's bgcolor (a RGB color)
-			if(isset($data->style->fill)){
-				$activeSheet->getStyle($data->key) ->getFill()
+			if(isset($data->styles->fill)){
+				$activeSheet->getStyle($key) ->getFill()
 				->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
 				->getStartColor()
-				->setRGB($data->style->fill);
+				->setRGB($data->styles->fill);
 			}
 			//cell border
-			if(isset($data->style->border)){
-				$style = $data->style->border->style;
+			if(isset($data->styles->border)){
+				$style = $data->styles->border->style;
 				$excel_boder_style = '';
 				switch ($style) {
 					case 'thin':
@@ -93,33 +101,34 @@ foreach($datas as $row){
 					$excel_boder_style = PHPExcel_Style_Border::BORDER_THICK;
 						break;
 				}
-				$color = $data->style->border->color;
-				$position =  @$data->style->border->position;
-				$activeSheet->getStyle($data->key)->applyFromArray(
+				$color = $data->styles->border->color;
+				$position =  @$data->styles->border->position;
+				$activeSheet->getStyle($key)->applyFromArray(
 					$border_style= array('borders' => array(exist($position, 'allborders') => array('style' => 
 					$excel_boder_style,'color' => array('argb' => $color),)))
 				);
 			}
 
 			//font
-			if(isset($data->style->font)) {
-				$styleArray = array('font'  => json_decode(json_encode($data->style->font), True));
-				$activeSheet->getStyle($data->key)->applyFromArray($styleArray);
+			if(isset($data->styles->font)) {
+				$styleArray = array('font'  => json_decode(json_encode($data->styles->font), True));
+				$activeSheet->getStyle($key)->applyFromArray($styleArray);
 			}
 			//alignment and rotation
-			if(isset($data->style->alignment)){
-				$key = $data->style->alignment->key;
-				$value = $data->style->alignment->value;
-				$rotation = @$data->style->alignment->rotation;
+			if(isset($data->styles->alignment)){
+				$_key = $data->styles->alignment->key;
+				$value = $data->styles->alignment->value;
+				
+				$rotation = $data->styles->alignment->rotation ?? 0;
 				$styleArray = array(
 					'alignment'=>array(
-						$key => $value
+						$_key => $value
 					)
 				);
-				$activeSheet->getStyle($data->key)->applyFromArray($styleArray);
-				$activeSheet->getStyle($data->key)->getAlignment()->setTextRotation( exist($rotation, 0));
+				$activeSheet->getStyle($key)->applyFromArray($styleArray);
+				$activeSheet->getStyle($key)->getAlignment()->setTextRotation( exist($rotation, 0));
 			}
-		}
+		
     }
 }
 
@@ -154,4 +163,4 @@ $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 $objWriter->save($filePath);
 
 
-echo file_get_contents($filePath);
+// echo file_get_contents($filePath);

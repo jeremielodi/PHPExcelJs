@@ -4,7 +4,7 @@ Node version of PHPExcel
 In this repository I'm using PHPExcel library for recreating xlsx files with nodejs
 <br/>
 As this precess requires interation between PHP and nodejs, php must be installed in your server <br/>
-```sudo apt-get install php5-cli```
+```sudo apt-get install php7-cli```
 <br>
 I facilitate this communication by creating a radom json file (in nodejs) that I save in temp folder, next I execute a child process 
 ```"php  convertor.php " + jsonFile``` for calling php.
@@ -14,9 +14,6 @@ I facilitate this communication by creating a radom json file (in nodejs) that I
 Usage
 
 ```js
-const phpExcel = require('./index');
-
-
 var express = require('express');
 let app = express();
 
@@ -58,120 +55,38 @@ app.get('/excel', (req, res, next) => {
     }
   }
 
-  const WorkBook = {
-    name: 'Myfile.xlsx',
-    sheets: [{
-        name: 'My sheet',
-        columns: [{
-            key: 'A',
-            width: 12
-          },
-          {
-            key: 'B',
-            width: 10
-          },
-          {
-            key: 'C',
-            width: 15
-          }
-        ],
-        rows: [
-          [{
-              key: 'A5',
-              value: "Nom",
-              style: styleHeader
-            },
-            {
-              key: 'B5',
-              value: "dob",
-              style: styleHeader
-            },
-            {
-              key: 'C5',
-              value: "prenom",
-              style: styleHeader
-            }
-          ],
-          [{
-              key: 'A6',
-              value: 23.546,
-              style: style1
-            },
-            {
-              key: 'B6',
-              value: '2018-01-03',
-              style: dateStyle
-            },
-            {
-              key: 'C6',
-              value: 'Jeremie Lodi'
-            }
-          ],
-          [{
-              key: 'A7',
-              value: 10
-            },
-            {
-              key: 'B7',
-              value: 20
-            },
-            {
-              key: 'C7',
-              value: '=SUM(A7:B7)'
-            }
-          ],
 
-        ],
 
-        drawings: [{
-            name: 'logo',
-            cordonnates: 'A2',
-            path: __dirname + '\\images\\phpexcel_logo.gif',
-            height: 40,
-            offsetX: 20
-          },
-          {
-            name: 'logo',
-            cordonnates: 'L2',
-            path: __dirname + '\\images\\phpexcel_logo.gif',
-            height: 40,
-            offsetX: 20
-          }
-        ]
-      },
 
-      {
-        name: "sheet2",
-        rows: [
-          [{
-              key: 'A1',
-              value: "First name",
-              style: styleHeader
-            },
-            {
-              key: 'B2',
-              value: "dob",
-              style: styleHeader
-            },
-            {
-              key: 'C3',
-              value: "Last name",
-              style: styleHeader
-            }
-          ]
-        ]
-      }
-    ]
-  };
+  const WorkBook = require('./lib/workBook').WorkBook;
 
-  phpExcel.render(WorkBook).then(ExcelBuffer => {
+  let wb = new WorkBook('Myfile.xlsx');
 
-    res.writeHead(200, {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename=file.xlsx',
-      'Content-Length': ExcelBuffer.length
-    });
-    res.end(ExcelBuffer);
+  var ws = wb.addWorksheet("S1");
+  ws.cell(1, 1).value("JEREMIE LODI").style(styleHeader, dateStyle);
+  ws.cell(3, 1).value("Bad");
+  ws.setCellValue("A3", 1200.8747).style(style1);
+  ws.setCellValue("A2", "Works");
+
+  var ws2 = wb.addWorksheet("classe 2");
+  ws2.setCellValue("A1", '2017-03-09').style(dateStyle);
+  ws.cell('A2').style({
+    font: {
+      bold: true
+    }
+  });
+
+  ws.freezePane("A1");
+  ws.mergeCells("C4", "F4").value("Super long test").freeze();
+  ws.cell("C4").style(style1);
+
+  ws.col("A").setWidth(30);
+
+
+
+  wb.render().then(result => {
+    res.set(result.headers);
+    res.send(result.report); //result is excel's stream
   }).catch(err => {
     console.log(err);
   }).done();
