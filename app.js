@@ -1,11 +1,11 @@
 var express = require('express');
 
+const WorkBook = require("./lib/workBook").WorkBook;
 let app = express();
 
 app.use(express.static(__dirname));
 app.get('/excel', (req, res, next) => {
 
-  const WorkBook = require("./lib/workBook").WorkBook;
 
   const styleFormatedNumber = {
     format: "#.##",
