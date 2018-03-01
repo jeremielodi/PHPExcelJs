@@ -165,12 +165,23 @@ foreach($drawings as $dr){
 
 
 $objPHPExcel->getActiveSheet()->setTitle($sheet->name);
+
+
+
+
+if(count($sheet->charts) > 0){
+	foreach($sheet->charts as $_chart){
+		if($_chart->type=='barChart'){
+			require_once(__DIR__."\\barChart.php");
+		}
+	}
+}
 $sheetCounter++;
 }
 
 $objPHPExcel->setActiveSheetIndex(0);
 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-
+$objWriter->setIncludeCharts(TRUE);
 $objWriter->save($filePath);
 
 

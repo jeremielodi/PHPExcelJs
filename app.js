@@ -1,4 +1,4 @@
-var express = require('express');
+const express = require('express');
 
 const WorkBook = require("./lib/workBook").WorkBook;
 let app = express();
@@ -75,7 +75,7 @@ app.get('/excel', (req, res, next) => {
 
   let wb = new WorkBook('Myfile.xlsx');
 
-  var ws = wb.addWorksheet("Sheet1");
+  var ws = wb.addWorksheet("sheet1");
 
   // A1
   ws.cell(1, 1).value("JEREMIE LODI").style(styleHeader);
@@ -85,7 +85,7 @@ app.get('/excel', (req, res, next) => {
   ws.cell('A2').style(bold);
 
   ws.freezePane("A1");
-  ws.mergeCells("C4", "F12").value("Super long test underlined and rotated")
+  ws.mergeCells("C4", "F12").value("Super long text underlined and rotated")
     .freeze()
     .style(styleBorder, textRotale)
     .setUnderline(true);
@@ -94,16 +94,42 @@ app.get('/excel', (req, res, next) => {
 
   ws.cell("D1").value("1992-03-13").style(dateType);
 
+  // new worksheet
   var ws2 = wb.addWorksheet("sheet 2");
   ws2.col("A").setWidth(15);
   ws2.col("B").setWidth(15);
   ws2.setCellValue("A1", "First name").style(styleHeader).setUnderline(true);
 
   ws2.setCellValue("B1", "Last name").style(styleHeader).setUnderline(true);
+
   for (var i = 2; i < 5000; i++) {
     ws2.setCellValue("A" + i, "Alice" + i);
     ws2.setCellValue("B" + i, "Bob" + i);
   }
+
+  // new worksheet
+  var ws3 = wb.addWorksheet('Worksheet');
+
+  ws3.fromArray(
+    [
+      ['', 2010, 2011, 2012],
+      ['Q1', 12, 15, 21],
+      ['Q2', 56, 73, 86],
+      ['Q3', 52, 61, 69],
+      ['Q4', 30, 32, 0],
+    ]
+  );
+
+
+  let chart = ws3.addChart('barChart');
+  chart.setTitle("Chart title")
+    .setSeriesLables(['$B$1', '$C$1', '$D$1'], 'Number', 1) //2010 2011, 2012, 2013
+    .setXAxisTickValues(['$A$2:$A$5'], 'String', 4) //Q1 to Q4
+    .setSeriesValues(['$B$2:$B$5', '$C$2:$C$5', '$D$2:$D$5'], 'Number', 4)
+    .setValueTitle("Value ($k)")
+    .setTopLeftPosition("A7")
+    .setBottomRightPosition("H20");
+
 
   wb.render().then(result => {
     res.set(result.headers);
