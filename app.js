@@ -32,9 +32,12 @@ app.get('/excel', (req, res, next) => {
   }
   const styleBorder = {
     border: {
-      style: 'thin',
-      color: 'FFFF0000',
-      //position :  'right', 'left', 'top', 'bottom' . default 'allborders'
+      /*
+        dashDot, dashDotDot, dashed, dotted, double, hair,mediumDashDot
+        mediumDashDotDot, mediumDashed, slantDashDot, thin, thick
+      */
+      style: 'medium',
+      color: 'FFFF0000'
     },
   }
   const dateStyle = {
@@ -43,7 +46,7 @@ app.get('/excel', (req, res, next) => {
     border: {
       style: 'thin',
       color: 'FFFF0000',
-      //position : 'allborders'
+      //position : 'allborders', left, outline, right,bottom, top, vertical, diagonal
     },
     font: {
       bold: true,

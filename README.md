@@ -30,10 +30,11 @@ ws.fromArray(
   ]
 );
 
-wb.render().then(result => {
-  // result.headers;
-  // result.report; //report is excel's stream, you can use fs to save it
-}).catch(err => {
+const path = __dirname+"/Myfile.xlsx";
+wb.write(path).then(result => {
+  console.log('success');
+})
+.catch(err => {
   console.log(err);
 }).done();
 
