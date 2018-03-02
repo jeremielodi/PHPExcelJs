@@ -134,15 +134,15 @@ foreach ($sheets as $sheet) {
 
         $objDrawing = new PHPExcel_Worksheet_Drawing();
         $objDrawing->setWorksheet($activeSheet);
-        $objDrawing->setName($dr->name);
-        $objDrawing->setDescription(exist(@$dr->description, $dr->name));
+        $objDrawing->setName($dr->name??'image');
+        $objDrawing->setDescription($dr->description??$dr->name??'image');
         $objDrawing->setPath($dr->path);
-        $objDrawing->setCoordinates($dr->cordonnates);
-        $objDrawing->setOffsetX($dr->offsetX);
-        $objDrawing->setHeight($dr->height);
+        $objDrawing->setCoordinates($dr->cordonates??'A1');
+        $objDrawing->setOffsetX($dr->offsetX??0);
+        $objDrawing->setHeight($dr->height??30);
         $objDrawing->setRotation(exist(@$dr->rotation, 0));
-        $objDrawing->getShadow()->setVisible(exist(@$dr->visible, true));
-        $objDrawing->getShadow()->setDirection(exist(@$dr->direction, 45));
+        $objDrawing->getShadow()->setVisible($dr->visible?? true);
+        $objDrawing->getShadow()->setDirection($dr->direction?? 45);
     }
 
     $objPHPExcel->getActiveSheet()->setTitle($sheet->name);

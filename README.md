@@ -30,6 +30,15 @@ ws.fromArray(
   ]
 );
 
+ const logoPath = __dirname + "/images/phpexcel_logo.gif";
+  let logo = ws.addImage(logoPath);
+  logo.setName("Logo")
+    .setDescription('Adding image')
+    .setCoordinates("A8")
+    .setOffsetX(20)
+    .setRotation(5)
+    .setHeight(40);
+
 const path = __dirname+"/Myfile.xlsx";
 wb.write(path).then(result => {
   console.log('success');

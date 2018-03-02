@@ -110,6 +110,18 @@ app.get('/excel', (req, res, next) => {
     ws2.setCellValue("B" + i, "Bob" + i);
   }
 
+
+  const logoPath = __dirname + "/images/phpexcel_logo.gif";
+  let logo = ws.addImage(logoPath);
+  logo.setName("Logo")
+    .setDescription('Adding image')
+    .setCoordinates("A8")
+    .setOffsetX(20)
+    .setRotation(5)
+    .setHeight(40);
+
+
+
   // new worksheet
   var ws3 = wb.addWorksheet('Worksheet');
 
